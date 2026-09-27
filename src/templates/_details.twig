@@ -1,0 +1,39 @@
+{% extends 'site-builder/_layout' %}
+{% import '_includes/forms' as forms %}
+{% set step = 'details' %}
+
+{% block step %}
+	<form method="post" enctype="multipart/form-data" accept-charset="UTF-8">
+		{{ csrfInput() }}
+		{{ actionInput('site-builder/wizard/save-details') }}
+
+		{{ forms.textField({
+			label: 'Site name',
+			instructions: 'The site handle is made from this, e.g. "Acme Plumbing" becomes `acmePlumbing`.',
+			name: 'name',
+			value: wizard.name ?? '',
+			required: true,
+			autofocus: true,
+		}) }}
+
+		{{ forms.field({
+			label: 'Logo',
+			instructions: (wizard.logoFilename ?? false) ? 'Uploaded: ' ~ wizard.logoFilename ~ '. Choose a file to replace it.' : 'Saved to the Clients volume.',
+		}, '<input type="file" name="logo" accept="image/*">') }}
+
+		{{ forms.selectField({
+			label: 'Theme',
+			name: 'theme',
+			value: wizard.theme ?? '',
+			required: true,
+			options: [{label: '', value: ''}]|merge(themes|map(t => {label: t.name, value: t.handle})|values),
+		}) }}
+
+		<div class="sb-actions">
+			<button type="submit" class="btn submit">Next</button>
+			{% if wizard %}
+				<a class="btn" href="{{ actionUrl('site-builder/wizard/reset') }}">Start over</a>
+			{% endif %}
+		</div>
+	</form>
+{% endblock %}

@@ -1,0 +1,24 @@
+{# Wizard layout: step indicator above each step's content #}
+{% extends '_layouts/cp' %}
+{% set title = 'Site Builder' %}
+{% set steps = {details: '1. Details', content: '2. Content and user', review: '3. Review and publish'} %}
+
+{% css %}
+	.sb-steps { display: flex; gap: 1.5rem; margin-bottom: 1.5rem; }
+	.sb-steps .sb-current { font-weight: bold; }
+	.sb-list { columns: 3 14rem; margin-bottom: 1rem; }
+	.sb-list label { display: inline-flex; gap: 0.5rem; align-items: center; }
+	.sb-actions { display: flex; gap: 0.5rem; align-items: center; margin-top: 1.5rem; }
+	.sb-details { white-space: pre-wrap; background: var(--gray-050); padding: 1rem; border-radius: var(--small-border-radius); font-family: var(--code-font); font-size: 0.8125rem; }
+{% endcss %}
+
+{% block content %}
+	{% if step is defined %}
+		<div class="sb-steps">
+			{% for handle, label in steps %}
+				<span class="{{ handle == step ? 'sb-current' : 'light' }}">{{ label }}</span>
+			{% endfor %}
+		</div>
+	{% endif %}
+	{% block step %}{% endblock %}
+{% endblock %}

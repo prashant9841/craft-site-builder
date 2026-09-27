@@ -1,0 +1,22 @@
+{
+	"name": "moca/craft-site-builder",
+	"description": "Sets up a client site on a shared Craft install: site, theme singles, volume, sections, user, GraphQL schema and JWT access.",
+	"type": "craft-plugin",
+	"version": "0.1.0",
+	"license": "proprietary",
+	"require": {
+		"php": ">=8.2",
+		"craftcms/cms": "^5.0",
+		"jamesedmonston/graphql-authentication": "^3.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"moca\\sitebuilder\\": "src/"
+		}
+	},
+	"extra": {
+		"handle": "site-builder",
+		"name": "Moca Site Builder",
+		"class": "moca\\sitebuilder\\SiteBuilder"
+	}
+}

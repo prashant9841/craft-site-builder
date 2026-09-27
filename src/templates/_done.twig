@@ -1,0 +1,10 @@
+{% extends 'site-builder/_layout' %}
+
+{% block step %}
+	<h2>{{ site.name ?? 'Site' }} is set up</h2>
+	<p>
+		{% if entry %}<a href="{{ entry.cpEditUrl }}">Sites Published entry</a> · {% endif %}
+		<a href="{{ cpUrl('site-builder') }}">Build another site</a>
+	</p>
+	<div class="sb-details">{{ built.details }}</div>
+{% endblock %}

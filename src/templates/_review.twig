@@ -1,0 +1,29 @@
+{% extends 'site-builder/_layout' %}
+{% set step = 'review' %}
+
+{% block step %}
+	<table class="data fullwidth">
+		<tbody>
+			<tr><th>Site</th><td>{{ wizard.name }} <code>{{ wizard.handle }}</code></td></tr>
+			<tr><th>Theme</th><td>{{ theme.name }}: <code>{{ theme.home }}</code> for Home, <code>{{ theme.page }}</code> for pages</td></tr>
+			<tr><th>Logo</th><td>{{ wizard.logoFilename ?? 'None' }}</td></tr>
+			<tr><th>Singles</th><td><code>{{ wizard.handle }}Home</code>, <code>{{ wizard.handle }}Settings</code></td></tr>
+			<tr><th>Images volume</th><td><code>{{ wizard.handle }}Images</code> (<code>@webroot/sites/{{ wizard.handle }}</code>)</td></tr>
+			<tr><th>Sections</th><td><code>{{ pagesSection }}</code>{% for section in sections %}, <code>{{ section.handle }}</code>{% endfor %}</td></tr>
+			<tr><th>Category groups</th><td>{% for group in categoryGroups %}<code>{{ group.handle }}</code>{{ not loop.last ? ', ' }}{% else %}None{% endfor %}</td></tr>
+			<tr><th>Global sets</th><td>{% for set in globalSets %}<code>{{ set.handle }}</code>{{ not loop.last ? ', ' }}{% else %}None{% endfor %}</td></tr>
+			<tr><th>User</th><td>{{ existingUser ? existingUser.email ~ ' (existing)' : wizard.user.email ~ ' (new)' }}</td></tr>
+			<tr><th>User group</th><td>Site: {{ wizard.name }} <code>{{ wizard.handle }}Editors</code></td></tr>
+			<tr><th>GraphQL schema</th><td>Site: {{ wizard.name }}, with JWT access for the user group</td></tr>
+		</tbody>
+	</table>
+
+	<form method="post" accept-charset="UTF-8">
+		{{ csrfInput() }}
+		{{ actionInput('site-builder/wizard/publish') }}
+		<div class="sb-actions">
+			<a class="btn" href="{{ cpUrl('site-builder/content') }}">Back</a>
+			<button type="submit" class="btn submit">Publish</button>
+		</div>
+	</form>
+{% endblock %}

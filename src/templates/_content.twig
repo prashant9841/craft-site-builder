@@ -1,0 +1,79 @@
+{% extends 'site-builder/_layout' %}
+{% import '_includes/forms' as forms %}
+{% set step = 'content' %}
+
+{% macro checkboxList(name, items, selected) %}
+	<div class="sb-list">
+		{% for item in items %}
+			<div>
+				<label>
+					<input type="checkbox" name="{{ name }}[]" value="{{ item.id }}" {{ item.id in selected ? 'checked' }}>
+					<span>{{ item.name }}</span> <code>{{ item.handle }}</code>
+				</label>
+			</div>
+		{% else %}
+			<p class="light">None on this install.</p>
+		{% endfor %}
+	</div>
+{% endmacro %}
+
+{% block step %}
+	{% set user = wizard.user ?? {} %}
+	{% set userMode = (user.id ?? false) ? 'existing' : 'new' %}
+
+	<form method="post" accept-charset="UTF-8" id="sb-content">
+		{{ csrfInput() }}
+		{{ actionInput('site-builder/wizard/save-content') }}
+
+		<p class="light">Always included: the <code>{{ pagesSection }}</code> section, a Home single and a Site settings single.</p>
+
+		<h2>Sections</h2>
+		{{ _self.checkboxList('sectionIds', sections, wizard.sectionIds ?? []) }}
+
+		<h2>Category groups</h2>
+		{{ _self.checkboxList('categoryGroupIds', categoryGroups, wizard.categoryGroupIds ?? []) }}
+
+		<h2>Global sets</h2>
+		{{ _self.checkboxList('globalSetIds', globalSets, wizard.globalSetIds ?? []) }}
+
+		<h2>User</h2>
+		{{ forms.radioGroupField({
+			name: 'userMode',
+			value: userMode,
+			options: [{label: 'Create a new user', value: 'new'}, {label: 'Use an existing user', value: 'existing'}],
+		}) }}
+
+		<div data-user-mode="new">
+			{{ forms.textField({label: 'Email', name: 'email', value: user.email ?? '', type: 'email'}) }}
+			{{ forms.textField({label: 'First name', name: 'firstName', value: user.firstName ?? ''}) }}
+			{{ forms.textField({label: 'Last name', name: 'lastName', value: user.lastName ?? ''}) }}
+			{{ forms.passwordField({label: 'Password', name: 'password', instructions: 'At least 6 characters. The user logs in with this through GraphQL Authentication.'}) }}
+		</div>
+		<div data-user-mode="existing">
+			{{ forms.selectField({
+				label: 'User',
+				name: 'userId',
+				value: user.id ?? '',
+				options: [{label: '', value: ''}]|merge(users|map(u => {label: u.email ~ (u.fullName ? ' (' ~ u.fullName ~ ')'), value: u.id})|values),
+			}) }}
+		</div>
+
+		<div class="sb-actions">
+			<a class="btn" href="{{ cpUrl('site-builder') }}">Back</a>
+			<button type="submit" class="btn submit">Next</button>
+		</div>
+	</form>
+
+	{% js %}
+		// Show the inputs for the chosen user mode only
+		(() => {
+			const form = document.getElementById('sb-content');
+			const sync = () => {
+				const mode = form.querySelector('input[name=userMode]:checked')?.value ?? 'new';
+				form.querySelectorAll('[data-user-mode]').forEach(el => el.classList.toggle('hidden', el.dataset.userMode !== mode));
+			};
+			form.addEventListener('change', sync);
+			sync();
+		})();
+	{% endjs %}
+{% endblock %}
